@@ -23,10 +23,6 @@ enum EnumUserStatus {
   PENDING
   ACTIVE
 }
-enum EnumAddressCountry {
-  BRAZIL
-  USA
-}
 enum EnumSettingsType  {
 GLOBAL
 USER 
@@ -40,9 +36,7 @@ model User {
   id              Int                     @id @default(autoincrement())
   externalId      String                  @default(uuid())
   name            String
-  email           String
-  document       String
-  password           String
+  document       String @unique
   status          EnumUserStatus                  @default(PENDING)
   createAt                 DateTime                   @default(now())
   uptadeAt             DateTime                   @updatedAt
@@ -58,7 +52,7 @@ model UserAddress {
   street    String
   city      String
   postalCode String
-  country   EnumAddressCountry
+  country   String
   state     String  
   stateCode String @db.VarChar(3)
   user       User  @relation(fields: [idUser], references: [id])

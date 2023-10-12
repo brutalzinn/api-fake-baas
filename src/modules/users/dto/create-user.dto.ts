@@ -1,11 +1,15 @@
 export class CreateUserDto {
     id?: string
+    document: string
     name: string
-    password: string
-    email: string
     address: UserAddress
+    contact: UserContact
 }
 
+export interface UserContact{
+    email: string
+    phoneNumber: string
+}
 export interface UserAddress {
   id?: number;
   street: string;
