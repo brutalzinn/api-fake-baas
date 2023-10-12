@@ -1,0 +1,37 @@
+version: "3"
+
+services: 
+  # api:
+  #   build:
+  #     context: .
+  #   container_name: jaecrednovoapi
+  #   ports:
+  #     - "${PORT}:8000"
+  #   env_file:
+  #     - .env
+  #   networks:
+  #     - docker-service
+  #   depends_on: 
+  #     - mariadb
+  #   volumes:
+  #     - "./:/usr/src/app"
+
+  mariadb:
+    image: mariadb:latest
+    container_name: mariadb-jaecred
+    env_file:
+      - .env
+    ports:
+      - "${MYSQL_PORT}:3306"
+    networks:
+      - docker-service
+    volumes:
+      - maria-data:/data/db
+
+networks:
+  docker-service:
+    driver: bridge
+
+volumes:
+  maria-data:
+    driver: local
