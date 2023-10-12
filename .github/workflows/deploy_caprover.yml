@@ -1,0 +1,46 @@
+name: Build & Deploy To CapRover
+
+on:
+  push:
+    branches: "dev" 
+
+  pull_request:
+    branches: "dev"
+
+  workflow_dispatch:
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    steps:
+        - name: Checkout code
+          uses: actions/checkout@v2
+
+        - name: Set up Node.js
+          uses: actions/setup-node@v2
+          with:
+            node-version: 18
+
+
+        - name: Generate prisma models
+          run: npx prisma generate
+
+        - uses: a7ul/tar-action@v1.1.0
+          with:
+            command: c
+            cwd: "./"
+            files: |
+              .
+            outPath: deploy.tar
+
+        - name: Deploy App to CapRover
+          uses: caprover/deploy-from-github@main
+          with:
+            server: '${{ secrets.CAPROVER_SERVER }}'
+            app: '${{ secrets.APP_NAME }}'
+            token: '${{ secrets.APP_TOKEN }}'
