@@ -5,4 +5,6 @@
 - [ ] transaction flow
 
 
-Access the BaaS OpenAPI doc at : ()[]
+Access the BaaS OpenAPI doc at :
+
+[Swagger](https://api-fake-baas.boberto.net/api)

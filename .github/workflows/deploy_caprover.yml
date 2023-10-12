@@ -26,9 +26,11 @@ jobs:
           with:
             node-version: 18
 
-
         - name: Generate prisma models
           run: npx prisma generate
+
+        - name: Build
+          run: npm run build
 
         - uses: a7ul/tar-action@v1.1.0
           with:
