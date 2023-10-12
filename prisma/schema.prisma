@@ -60,7 +60,7 @@ model UserAddress {
   postalCode String
   country   EnumAddressCountry
   state     String  
-  stateCode String  @default("CA") @db.VarChar(3)
+  stateCode String @db.VarChar(3)
   user       User  @relation(fields: [idUser], references: [id])
 }
 model UserMetadata {
@@ -83,9 +83,6 @@ model Settings {
   createAt          DateTime         @default(now())
   updateAt      DateTime         @updatedAt
   user           User?         @relation(fields: [idUser], references: [id])
-  uptadeAt     String           @default("system")
-  criadoPor         String           @default("system")
-
   @@unique([idUser, key], name: "user_id_key")
 }
 model UserWallet {
@@ -97,8 +94,8 @@ model UserWallet {
   uptadeAt             DateTime                   @updatedAt
   user               User                  @relation(fields: [idUser], references: [id])
   userWalletHistory UserWalletHistory[]
-  transactionDestination       Transactions[]                @relation("destination")
-  transactionOrigin        Transactions[]                @relation("origin")
+  sentTransactions    Transactions[] @relation("SentTransactions")
+  receivedTransactions Transactions[] @relation("ReceivedTransactions")
 }
 model UserWalletHistory {
   id              Int              @id @default(autoincrement())
@@ -111,10 +108,6 @@ model UserWalletHistory {
   createAt        DateTime         @default(now())
   updateAt    DateTime         @updatedAt
   userWallet UserWallet  @relation(fields: [idUserWallet], references: [id])
-  transaction       Transactions        @relation(fields: [Idtransaction], references: [id])
-
-  @@index([idUserWallet], map: "userWalletHistory_idWallet_fkey")
-  @@index([Idtransaction], map: "userWalletHistory_TransactionId_fkey")
 }
 model Transactions {
   id                       Int                                @id @default(autoincrement())
@@ -123,14 +116,11 @@ model Transactions {
   transactionType            EnumTransactionType  
   value                    Decimal
   description                String                             @default("")
-  userOriginWalletId          Int
-  userDestinationWalletId         Int? 
- expireAt                 DateTime
- createAt                 DateTime                   @default(now())
- uptadeAt             DateTime                   @updatedAt
-  userWalletDestinationId           UserWallet?                  @relation("destination", fields: [userDestinationWalletId], references: [id])
-  userWalletOriginId            UserWallet                   @relation("origin", fields: [userOriginWalletId ], references: [id])
-  userWalletHistory         UserWalletHistory[]
-@@index([userDestinationWalletId], map: "Transaction_userDestinationId_fkey")
-@@index([userOriginWalletId], map: "Transaction_userOriginId_fkey")
+  senderWallet   UserWallet   @relation("SentTransactions", fields: [senderWalletId], references: [id])
+  senderWalletId Int
+  receiverWallet UserWallet   @relation("ReceivedTransactions", fields: [receiverWalletId], references: [id])
+  receiverWalletId Int
+  expireAt                 DateTime
+  createAt                 DateTime                   @default(now())
+  uptadeAt             DateTime                   @updatedAt
 }
