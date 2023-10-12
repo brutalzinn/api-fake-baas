@@ -1,4 +1,5 @@
+[ ] init nestjs PoC (concept proof)
 [ ] database modeling 
-[ ] user Registration 
+[ ] user registration 
 [ ] user middleware
-[ ] transaction Flow 
+[ ] transaction flow 
