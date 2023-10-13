@@ -5,9 +5,9 @@ import { BullModule } from '@nestjs/bull';
 import { PrismaService } from 'src/database/prisma.service';
 import { TransactionProcessConsumer } from './consumers/transaction.process.consumer';
 import { WalletService } from '../wallet/wallet.service';
-
 @Module({
-  imports:[  BullModule.forRoot({
+  imports:[ 
+    BullModule.forRoot({
       redis: {
         host: process.env.REDIS_HOST || 'localhost',
         port:Number(process.env.REDIS_PORT) || 6379,
@@ -16,6 +16,11 @@ import { WalletService } from '../wallet/wallet.service';
     BullModule.registerQueue({name:"transactions-queue"}),
     ],
   controllers: [TransactionController],
-  providers: [TransactionService, TransactionProcessConsumer, PrismaService, WalletService],
+  providers: [
+    TransactionService,
+    TransactionProcessConsumer,
+    WalletService,
+    PrismaService
+   ]
 })
 export class TransactionModule {}

@@ -1,7 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import {  HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
-import { MoveMoneyToTarget } from './dto/move-money-to-target.dto';
-import { CreateWalletHistory } from './dto/create-wallet-history.dto';
+import { MoveMoneyToTarget } from '../../modules/wallet/entities/move.money.to.target';
+import { CreateWalletHistory } from '../../modules/wallet/entities/create.wallet.history';
 
 @Injectable()
 export class WalletService {
@@ -14,24 +14,21 @@ export class WalletService {
         }
     })
     if (!originAccount){
-        throw Error("Account not found")
-    }
-  }
-
-  async validateAccountBalance(account: string, value: number){
-    let originWallet = await this.prisma.userWallet.findFirst({
-        where: {
-            externalId: account
-        }
-    })
-    const balance = originWallet.balance.toNumber()
-    if(balance < value)
-    {
-        throw Error("Account found is insufficient.")
+        throw new HttpException('No found.', HttpStatus.FORBIDDEN)
     }
   }
 
   async moveMoneyToTarget(moveMoneyToTarget: MoveMoneyToTarget){
+    let originWallet = await this.prisma.userWallet.findFirst({
+        where: {
+            externalId: moveMoneyToTarget.account
+        }
+    })
+    const balance = originWallet.balance.toNumber()
+    if(balance < moveMoneyToTarget.value)
+    {
+        throw Error("Account found is insufficient.")
+    }
     let originWalletDrawBalance = this.prisma.userWallet.update({
       where:{
         externalId: moveMoneyToTarget.account

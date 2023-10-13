@@ -4,16 +4,20 @@ import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { InjectQueue } from '@nestjs/bull';
 import { Queue } from 'bull';
 import { Transaction } from './entities/transaction.entity';
+import { WalletService } from '../wallet/wallet.service';
 
 @Injectable()
 export class TransactionService {
 
   constructor(
+  private wallet: WalletService,
   @InjectQueue('transactions-queue') private transactionsQueue: Queue<Transaction>
   ){}
   async create(createTransactionDto: CreateTransactionDto) {
-    await this.transactionsQueue.add(createTransactionDto)
-    return 'This action adds a new transaction';
+    let transaction = createTransactionDto
+    await this.wallet.validateAccount(transaction.account)
+    await this.transactionsQueue.add(transaction)
+    return 'Created';
   }
 
   findAll() {

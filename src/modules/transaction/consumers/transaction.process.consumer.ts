@@ -12,11 +12,7 @@ constructor(private prisma: PrismaService, private wallet: WalletService){}
   @Process()
   async process(job: Job<Transaction>) {
     const transaction = job.data
-
-    await this.wallet.validateAccount(transaction.account)
-    await this.wallet.validateAccountBalance(transaction.account, transaction.value)
-    let transactionExternalId = await this.createTransaction(transaction)
-
+    await this.createTransaction(transaction)
     await this.wallet.moveMoneyToTarget(transaction)
     await this.wallet.createWalletHistory(transaction)
     await this.updateTransactionToComplete(transaction)

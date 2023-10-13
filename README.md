@@ -1,7 +1,7 @@
-- [x] init nestjs PoC (concept proof)
-- [ ] database modeling
-- [ ] user registration
-- [ ] user middleware
+- [x] init nestjs PoC to a small baas concept (concept proof)
+- [x] database modeling
+- [ ] user creation
+- [ ] api key authorize
 - [ ] transaction flow
 
 

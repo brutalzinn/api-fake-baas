@@ -5,6 +5,8 @@ import { PrismaService } from 'src/database/prisma.service';
 
 @Module({
   controllers: [SettingsController],
-  providers: [SettingsService, PrismaService],
+  providers: [
+  SettingsService, 
+  PrismaService]
 })
 export class SettingsModule {}
