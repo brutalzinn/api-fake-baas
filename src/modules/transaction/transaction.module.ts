@@ -5,15 +5,17 @@ import { BullModule } from '@nestjs/bull';
 import { PrismaService } from 'src/database/prisma.service';
 import { TransactionProcessConsumer } from './consumers/transaction.process.consumer';
 import { WalletService } from '../wallet/wallet.service';
+import { Constants } from 'src/constants';
+import { ApiKeyService } from '../apikey/apikey.service';
 @Module({
   imports:[ 
     BullModule.forRoot({
       redis: {
-        host: process.env.REDIS_HOST || 'localhost',
-        port:Number(process.env.REDIS_PORT) || 6379,
+        host: Constants.REDIS_HOST,
+        port: Constants.REDIS_PORT,
       },
     }),
-    BullModule.registerQueue({name:"transactions-queue"}),
+    BullModule.registerQueue({name:Constants.TRANSACTION_QUEUE_NAME}),
     ],
   controllers: [TransactionController],
   providers: [

@@ -10,7 +10,7 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
 
-    const userExists = await this.prisma.user.findFirst({
+    const userExists = await this.prisma.client.findFirst({
       where: {document: createUserDto.document}
     })
 
@@ -18,7 +18,7 @@ export class UsersService {
       throw new Error("User already exists.")  ///TODO: implement error layer
     }
 
-    await this.prisma.user.create({
+    await this.prisma.client.create({
       data:{
         document: createUserDto.document,
         name: createUserDto.name,
@@ -62,7 +62,7 @@ export class UsersService {
 
 
   findOneByExternalId(id: string){
-    let user = this.prisma.user.findFirst({
+    let user = this.prisma.client.findFirst({
       where: {externalId: id}
     })
 
@@ -74,7 +74,7 @@ export class UsersService {
   }
 
    findOneByDocument(document: string){
-    let user = this.prisma.user.findFirst({
+    let user = this.prisma.client.findFirst({
       where: {document: document}
     })
 

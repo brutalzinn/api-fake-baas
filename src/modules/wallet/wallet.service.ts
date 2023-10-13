@@ -8,18 +8,18 @@ export class WalletService {
     constructor(private prisma: PrismaService){}
 
     async validateAccount(account: string){
-    let originAccount = await this.prisma.userWallet.findFirst({
+    let originAccount = await this.prisma.clientWallet.findFirst({
         where: {
             externalId: account
         }
     })
     if (!originAccount){
-        throw new HttpException('No any found.', HttpStatus.FORBIDDEN)
+        throw new HttpException('Account not found', HttpStatus.FORBIDDEN)
     }
   }
 
   async moveMoneyToTarget(moveMoneyToTarget: MoveMoneyToTarget){
-    let originWallet = await this.prisma.userWallet.findFirst({
+    let originWallet = await this.prisma.clientWallet.findFirst({
         where: {
             externalId: moveMoneyToTarget.account
         }
@@ -29,7 +29,7 @@ export class WalletService {
     {
         throw Error("Account found is insufficient.")
     }
-    let originWalletDrawBalance = this.prisma.userWallet.update({
+    let originWalletDrawBalance = this.prisma.clientWallet.update({
       where:{
         externalId: moveMoneyToTarget.account
       },
@@ -40,7 +40,7 @@ export class WalletService {
       }
     })
 
-    let targetWalletGainBalance = this.prisma.userWallet.update({
+    let targetWalletGainBalance = this.prisma.clientWallet.update({
       where:{
         externalId: moveMoneyToTarget.target.account
       },
@@ -60,13 +60,13 @@ export class WalletService {
 
   async createWalletHistory(createWalletHistory: CreateWalletHistory){
    
-   const originWallet = this.prisma.userWallet.findFirst({
+   const originWallet = this.prisma.clientWallet.findFirst({
       where:{
         externalId: createWalletHistory.account
       }
     })
 
-    const targetWallet = this.prisma.userWallet.findFirst({
+    const targetWallet = this.prisma.clientWallet.findFirst({
       where:{
         externalId: createWalletHistory.target.account
       }
@@ -75,7 +75,7 @@ export class WalletService {
     const walletsResult = await Promise.all([originWallet, targetWallet])
     const originBalance = walletsResult[0].balance.toNumber()
     const originBeforeValue = originBalance + createWalletHistory.value
-    const originWalletHistory = this.prisma.userWalletHistory.create({
+    const originWalletHistory = this.prisma.clientWalletHistory.create({
       data:{
         userWallet: {
           connect:walletsResult[0]
@@ -88,7 +88,7 @@ export class WalletService {
     })
     const targetBalance = walletsResult[1].balance.toNumber()
     const targetBeforeValue = targetBalance - createWalletHistory.value
-    const targetWalletHistory = this.prisma.userWalletHistory.create({
+    const targetWalletHistory = this.prisma.clientWalletHistory.create({
       data:{
         userWallet: {
           connect:walletsResult[1]

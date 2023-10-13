@@ -1,16 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateAccountOwnerDto } from './dto/create-account-owner.dto';
 import { UpdateAccountOwnerDto } from './dto/update-account-owner.dto';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { AuthorizeAccountOwnerDto } from './dto/authorize-account-owner.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
 export class AccountOwnerService {
   private saltOrRounds = 15;
-
-  constructor(private prisma: PrismaService){}
-
+  
+  constructor(private prisma: PrismaService, private jwtService: JwtService){}
+  
   async create(createAccountOwnerDto: CreateAccountOwnerDto) {
     const password = await bcrypt.hash(createAccountOwnerDto.password, this.saltOrRounds)
     await this.prisma.accountOwner.create({
@@ -22,8 +23,27 @@ export class AccountOwnerService {
     })
     return
   }
+  
+  async authorize(authorizeAccountOwner: AuthorizeAccountOwnerDto) {
+    let accountOwner = await this.prisma.accountOwner.findFirst({
+      where: {
+        email: authorizeAccountOwner.email
+      }
+    })
+    if(!accountOwner){
+      /// TODO: CREATE CUSTOM EXCEPTION BONDER FOR BUSINESS RULES AND ANY KIND OF COMMON VALIDATION
+      throw new UnauthorizedException();
+    }
+    
+    const isMatch = await bcrypt.compare(authorizeAccountOwner.password, accountOwner.password);
+    
+    if(!isMatch){
+      throw new UnauthorizedException();
+    }
 
-  authorize(auhtorizeAccountOwner: AuthorizeAccountOwnerDto) {
-    return `This action returns all accountOwner`;
+    const payload = { id: accountOwner.externalId };
+    return {
+      access_token: await this.jwtService.signAsync(payload),
+    };    
   }
 }

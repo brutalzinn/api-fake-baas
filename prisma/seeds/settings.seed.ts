@@ -1,5 +1,5 @@
 import { PrismaClient } from '@prisma/client'
-export  async function configuracoesSeed(prisma : PrismaClient) {
+export  async function settingsSeed(prisma : PrismaClient) {
 
     // 0 will disable this
     await prisma.settings.upsert({
@@ -38,6 +38,16 @@ export  async function configuracoesSeed(prisma : PrismaClient) {
         create: {
             key: "max_clients_by_account_owner",
             value: "10",
+            enviroment: 'SYSTEM'
+        }
+    })
+
+      await prisma.settings.upsert({
+        where: { id: 5 },
+        update: {},
+        create: {
+            key: "system_default_balance",
+            value: "0",
             enviroment: 'SYSTEM'
         }
     })

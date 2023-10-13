@@ -4,8 +4,7 @@ import { ApiKeyService } from 'src/modules/apikey/apikey.service';
 
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
-  
-  constructor(private readonly apikeyService: ApiKeyService) {}
+  constructor(private apikeyService: ApiKeyService) {}
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {

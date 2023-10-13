@@ -3,6 +3,8 @@
 // import {parseArgs} from 'node:util';
 import { PrismaClient } from '@prisma/client'
 import { parseArgs } from 'util';
+import { clientSeed } from './seeds/client.seed';
+import { settingsSeed } from './seeds/settings.seed';
 const prisma = new PrismaClient()
 
 type IOptions = {
@@ -23,8 +25,8 @@ async function main() {
   switch (args.environment) {
     case 'development':
      console.log("START SEED FOR DEV")
-
-        
+      await clientSeed(prisma)
+      await settingsSeed(prisma)
     break
     case 'test':
       break
