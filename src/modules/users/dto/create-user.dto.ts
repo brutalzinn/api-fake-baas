@@ -1,21 +1,33 @@
-export class CreateUserDto {
-    id?: string
-    document: string
-    name: string
-    address: UserAddress
-    contact: UserContact
+import { ApiProperty } from "@nestjs/swagger"
+
+ class UserContact{
+  @ApiProperty()
+  email: string;
+  @ApiProperty()
+  phoneNumber: string;
+}
+ class UserAddress {
+  @ApiProperty()
+  street: string;
+  @ApiProperty()
+  city: string;
+  @ApiProperty()
+  postalCode: string;
+  @ApiProperty()
+  country: string;
+  @ApiProperty()
+  state: string;
+  @ApiProperty()
+  stateCode: string;
 }
 
-export interface UserContact{
-    email: string
-    phoneNumber: string
-}
-export interface UserAddress {
-  id?: number;
-  street: string;
-  city: string;
-  postalCode: string;
-  country: string;
-  state: string;
-  stateCode: string;
+export class CreateUserDto  {
+  @ApiProperty()
+  document: string;
+  @ApiProperty()
+  name: string;
+  @ApiProperty()
+  address: UserAddress;
+  @ApiProperty()
+  contact: UserContact;
 }

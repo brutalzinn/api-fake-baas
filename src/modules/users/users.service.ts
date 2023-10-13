@@ -32,11 +32,16 @@ export class UsersService {
             street: createUserDto.address.street
           }
         },
+        wallet: {
+          create:{
+            balance: 0
+          }
+        },
         metadatas:{
           createMany:{
             data: [
               {
-                key: "contact.phonenumber",
+                key: "contact.phone_number",
                 value: createUserDto.contact.phoneNumber
               },
                {
@@ -49,15 +54,28 @@ export class UsersService {
       },
     include: {
       address: true,
-      metadatas: true
+      metadatas: true,
+      wallet: true
     }
     })
   }
 
 
-  findOne(id: string){
+  findOneByExternalId(id: string){
     let user = this.prisma.user.findFirst({
       where: {externalId: id}
+    })
+
+    if(!user){
+       throw Error("User not found")
+    }
+
+    return user
+  }
+
+   findOneByDocument(document: string){
+    let user = this.prisma.user.findFirst({
+      where: {document: document}
     })
 
     if(!user){

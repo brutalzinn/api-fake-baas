@@ -1,1 +1,3 @@
-export class Setting {}
+export class Setting {
+    
+}

@@ -3,7 +3,6 @@ services:
  
   mysql:
     image: mysql:latest
-    container_name: mysql-fakebaas
     env_file:
       - .env
     ports:
@@ -13,10 +12,24 @@ services:
     volumes:
       - maria-data:/data/db
 
+  redis:
+      image: redis:6.2-alpine
+      restart: always
+      ports:
+        - '${REDIS_PORT}:6379'
+      volumes: 
+        - cache-data:/data
+      env_file:
+        - .env
+      networks:
+          - docker-service
+
 networks:
   docker-service:
     driver: bridge
 
 volumes:
   maria-data:
+    driver: local
+  cache-data:
     driver: local

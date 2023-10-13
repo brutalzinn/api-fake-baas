@@ -1,8 +1,7 @@
-
 // Todo: Review the transaction modeling 
 
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-3.0.x"]
 }
 
@@ -10,112 +9,124 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
 enum EnumTransactionStatus {
   PENDING
   COMPLETED
   FAILED
   CANCELED
 }
+
 enum EnumTransactionType {
   P2P
   PIX
 }
+
 enum EnumUserStatus {
   PENDING
   ACTIVE
 }
-enum EnumSettingsType  {
-GLOBAL
-USER 
-SYSTEM
+
+enum EnumSettingsType {
+  GLOBAL
+  USER
+  SYSTEM
 }
+
 enum EnumPaymentDirection {
-  IN 
+  IN
   OUT
 }
+
 model User {
-  id              Int                     @id @default(autoincrement())
-  externalId      String                  @default(uuid())
-  name            String
-  document       String @unique
-  status          EnumUserStatus                  @default(PENDING)
-  createAt                 DateTime                   @default(now())
-  uptadeAt             DateTime                   @updatedAt
-  address        UserAddress?
+  id         Int            @id @default(autoincrement())
+  externalId String         @default(uuid())
+  name       String
+  document   String         @unique
+  status     EnumUserStatus @default(PENDING)
+  createAt   DateTime       @default(now())
+  uptadeAt   DateTime       @updatedAt
+  address    UserAddress?
   settings   Settings[]
-  wallet        UserWallet?
-  metadatas       UserMetadata[]
-  
+  wallet     UserWallet?
+  metadatas  UserMetadata[]
 }
+
 model UserAddress {
-  id        Int       @id @default(autoincrement())
-  idUser     Int @unique
-  street    String
-  city      String
+  id         Int    @id @default(autoincrement())
+  idUser     Int    @unique
+  street     String
+  city       String
   postalCode String
-  country   String
-  state     String  
-  stateCode String @db.VarChar(3)
-  user       User  @relation(fields: [idUser], references: [id])
+  country    String
+  state      String
+  stateCode  String @db.VarChar(3)
+  user       User   @relation(fields: [idUser], references: [id])
 }
+
 model UserMetadata {
-  id            Int      @id @default(autoincrement())
-  idUser     Int
-  key         String
-  value         String
-  createAt                 DateTime                   @default(now())
-  uptadeAt             DateTime                   @updatedAt
-  user       User  @relation(fields: [idUser], references: [id])
+  id       Int      @id @default(autoincrement())
+  idUser   Int
+  key      String
+  value    String
+  createAt DateTime @default(now())
+  uptadeAt DateTime @updatedAt
+  user     User     @relation(fields: [idUser], references: [id])
+
   @@unique([idUser, key], name: "user_id_key")
 }
+
 model Settings {
-  id                Int              @id @default(autoincrement())
-  externalId        String           @default(uuid())
-  key             String
-  value             String           @db.LongText
-  idUser        Int?
-  enviroment             EnumSettingsType          @default(GLOBAL)
-  createAt          DateTime         @default(now())
-  updateAt      DateTime         @updatedAt
-  user           User?         @relation(fields: [idUser], references: [id])
+  id         Int              @id @default(autoincrement())
+  externalId String           @default(uuid())
+  key        String
+  value      String           @db.LongText
+  idUser     Int?
+  enviroment EnumSettingsType @default(GLOBAL)
+  createAt   DateTime         @default(now())
+  updateAt   DateTime         @updatedAt
+  user       User?            @relation(fields: [idUser], references: [id])
+
   @@unique([idUser, key], name: "user_id_key")
 }
+
 model UserWallet {
-  id                       Int                        @id @default(autoincrement())
-  idUser               Int                        @unique
-  externalId               String                     @default(uuid())
-  balance                    Decimal                    @default(0)
-  createAt                 DateTime                   @default(now())
-  uptadeAt             DateTime                   @updatedAt
-  user               User                  @relation(fields: [idUser], references: [id])
-  userWalletHistory UserWalletHistory[]
-  sentTransactions    Transactions[] @relation("SentTransactions")
-  receivedTransactions Transactions[] @relation("ReceivedTransactions")
+  id                   Int                 @id @default(autoincrement())
+  idUser               Int                 @unique
+  externalId           String              @unique @default(uuid())
+  balance              Decimal             @default(0)
+  createAt             DateTime            @default(now())
+  uptadeAt             DateTime            @updatedAt
+  user                 User                @relation(fields: [idUser], references: [id])
+  userWalletHistory    UserWalletHistory[]
+  sentTransactions     Transactions[]      @relation("SentTransactions")
+  receivedTransactions Transactions[]      @relation("ReceivedTransactions")
 }
+
 model UserWalletHistory {
-  id              Int              @id @default(autoincrement())
-  idUserWallet      Int
-  direction         EnumPaymentDirection
-  balanceBefore      Decimal
-  balanceAfter     Decimal
-  value           Decimal
-  Idtransaction     Int
-  createAt        DateTime         @default(now())
-  updateAt    DateTime         @updatedAt
-  userWallet UserWallet  @relation(fields: [idUserWallet], references: [id])
+  id            Int                  @id @default(autoincrement())
+  idUserWallet  Int
+  direction     EnumPaymentDirection
+  balanceBefore Decimal
+  balanceAfter  Decimal
+  value         Decimal
+  createAt      DateTime             @default(now())
+  updateAt      DateTime             @updatedAt
+  userWallet    UserWallet           @relation(fields: [idUserWallet], references: [id])
 }
+
 model Transactions {
-  id                       Int                                @id @default(autoincrement())
-  externalId               String                             @unique @default(uuid())
-  status                    EnumTransactionStatus             @default(PENDING)
-  transactionType            EnumTransactionType  
-  value                    Decimal
-  description                String                             @default("")
-  senderWallet   UserWallet   @relation("SentTransactions", fields: [senderWalletId], references: [id])
-  senderWalletId Int
-  receiverWallet UserWallet   @relation("ReceivedTransactions", fields: [receiverWalletId], references: [id])
+  id               Int                   @id @default(autoincrement())
+  externalId       String                @unique @default(uuid())
+  status           EnumTransactionStatus @default(PENDING)
+  transactionType  EnumTransactionType
+  value            Decimal
+  description      String                @default("")
+  senderWallet     UserWallet            @relation("SentTransactions", fields: [senderWalletId], references: [id])
+  senderWalletId   Int
+  receiverWallet   UserWallet            @relation("ReceivedTransactions", fields: [receiverWalletId], references: [id])
   receiverWalletId Int
-  expireAt                 DateTime
-  createAt                 DateTime                   @default(now())
-  uptadeAt             DateTime                   @updatedAt
+  expireAt         DateTime
+  createAt         DateTime              @default(now())
+  uptadeAt         DateTime              @updatedAt
 }
