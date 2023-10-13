@@ -14,7 +14,7 @@ export class WalletService {
         }
     })
     if (!originAccount){
-        throw new HttpException('No found.', HttpStatus.FORBIDDEN)
+        throw new HttpException('No any found.', HttpStatus.FORBIDDEN)
     }
   }
 

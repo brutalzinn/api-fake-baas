@@ -21,7 +21,7 @@ export class ApiKeyService {
             }
         })
         if (apiKeyExists){
-            throw new Error("Choose other identifier :)")  ///TODO: implement error layer
+            throw new Error("Choose other identifier :)")
         }
         const randomKey =  Math.random().toString(36).slice(-8);
         const keyWithPrefix = this.addPrefix(randomKey, createApiKey.identifier)

@@ -38,11 +38,26 @@ enum EnumPaymentDirection {
   OUT
 }
 
+
+model Settings {
+  id         Int              @id @default(autoincrement())
+  externalId String           @default(uuid())
+  key        String
+  value      String           @db.LongText
+  idAccountOwner     Int?
+  enviroment EnumSettingsType @default(GLOBAL)
+  createAt   DateTime         @default(now())
+  updateAt   DateTime         @updatedAt
+  account    AccountOwner?            @relation(fields: [idAccountOwner], references: [id])
+  @@unique([idAccountOwner, key], name: "account_owner_id_key")
+}
+
 model AccountOwner {
   id       Int      @id @default(autoincrement())
   name     String
   email    String
   password String
+  settings   Settings[]
   apikey   ApiKey[]
 }
 
@@ -57,11 +72,10 @@ model ApiKey {
   createAt       DateTime      @default(now())
   updateAt       DateTime      @updatedAt
   accountOwner   AccountOwner? @relation(fields: [idAccountOwner], references: [id])
-
   @@unique([idAccountOwner, key], name: "account_owner_id_key")
 }
 
-model User {
+model Client {
   id         Int            @id @default(autoincrement())
   externalId String         @default(uuid())
   name       String
@@ -69,15 +83,14 @@ model User {
   status     EnumUserStatus @default(PENDING)
   createAt   DateTime       @default(now())
   updateAt   DateTime       @updatedAt
-  address    UserAddress?
-  settings   Settings[]
-  wallet     UserWallet?
-  metadatas  UserMetadata[]
+  address    ClientAddress?
+  wallet     ClientWallet?
+  metadatas  ClientMetadata[]
 }
 
-model UserAddress {
+model ClientAddress {
   id         Int      @id @default(autoincrement())
-  idUser     Int      @unique
+  idClient     Int      @unique
   street     String
   city       String
   postalCode String
@@ -86,58 +99,45 @@ model UserAddress {
   stateCode  String   @db.VarChar(3)
   createAt   DateTime @default(now())
   updateAt   DateTime @updatedAt
-  user       User     @relation(fields: [idUser], references: [id])
+  client     Client     @relation(fields: [idClient], references: [id])
 }
 
-model UserMetadata {
+model ClientMetadata {
   id       Int      @id @default(autoincrement())
-  idUser   Int
+  idClient   Int
   key      String
   value    String
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
-  user     User     @relation(fields: [idUser], references: [id])
+  client     Client     @relation(fields: [idClient], references: [id])
 
-  @@unique([idUser, key], name: "user_id_key")
+  @@unique([idClient, key], name: "client_id_key")
 }
 
-model Settings {
-  id         Int              @id @default(autoincrement())
-  externalId String           @default(uuid())
-  key        String
-  value      String           @db.LongText
-  idUser     Int?
-  enviroment EnumSettingsType @default(GLOBAL)
-  createAt   DateTime         @default(now())
-  updateAt   DateTime         @updatedAt
-  user       User?            @relation(fields: [idUser], references: [id])
 
-  @@unique([idUser, key], name: "user_id_key")
-}
-
-model UserWallet {
+model ClientWallet {
   id                   Int                 @id @default(autoincrement())
-  idUser               Int                 @unique
+  idClient               Int                 @unique
   externalId           String              @unique @default(uuid())
   balance              Decimal             @default(0)
   createAt             DateTime            @default(now())
   updateAt             DateTime            @updatedAt
-  user                 User                @relation(fields: [idUser], references: [id])
-  userWalletHistory    UserWalletHistory[]
+  client                 Client                @relation(fields: [idClient], references: [id])
+  clientWalletHistory    ClientWalletHistory[]
   sentTransactions     Transactions[]      @relation("SentTransactions")
   receivedTransactions Transactions[]      @relation("ReceivedTransactions")
 }
 
-model UserWalletHistory {
+model ClientWalletHistory {
   id            Int                  @id @default(autoincrement())
-  idUserWallet  Int
+  idClientWallet  Int
   direction     EnumPaymentDirection
   balanceBefore Decimal
   balanceAfter  Decimal
   value         Decimal
   createAt      DateTime             @default(now())
   updateAt      DateTime             @updatedAt
-  userWallet    UserWallet           @relation(fields: [idUserWallet], references: [id])
+  userWallet    ClientWallet           @relation(fields: [idClientWallet], references: [id])
 }
 
 model Transactions {
@@ -147,9 +147,9 @@ model Transactions {
   transactionType  EnumTransactionType
   value            Decimal
   description      String                @default("")
-  senderWallet     UserWallet            @relation("SentTransactions", fields: [senderWalletId], references: [id])
+  senderWallet     ClientWallet            @relation("SentTransactions", fields: [senderWalletId], references: [id])
   senderWalletId   Int
-  receiverWallet   UserWallet            @relation("ReceivedTransactions", fields: [receiverWalletId], references: [id])
+  receiverWallet   ClientWallet            @relation("ReceivedTransactions", fields: [receiverWalletId], references: [id])
   receiverWalletId Int
   expireAt         DateTime
   createAt         DateTime              @default(now())

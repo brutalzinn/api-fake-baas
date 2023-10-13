@@ -4,10 +4,11 @@ import { ApiKeyModule } from "./modules/apikey/apikey.module";
 import { SettingsModule } from "./modules/settings/settings.module";
 import { TransactionModule } from "./modules/transaction/transaction.module";
 import { UsersModule } from "./modules/users/users.module";
+import { AccountOwnerModule } from "./modules/account-owner/account-owner.module";
 
 @Module({
   imports: [
-    
+    AccountOwnerModule,
     UsersModule,
     SettingsModule,
     TransactionModule,
