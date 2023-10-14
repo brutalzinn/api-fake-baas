@@ -1,4 +1,3 @@
 export class AccountOwner {
-    email: string 
-    password: string
+    id: string 
 }

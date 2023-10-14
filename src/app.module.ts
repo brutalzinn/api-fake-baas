@@ -3,8 +3,10 @@ import { ThrottlerModule } from "@nestjs/throttler";
 import { ApiKeyModule } from "./modules/apikey/apikey.module";
 import { SettingsModule } from "./modules/settings/settings.module";
 import { TransactionModule } from "./modules/transaction/transaction.module";
-import { UsersModule } from "./modules/users/users.module";
+import { UsersModule } from "./modules/clients/clients.module";
 import { AccountOwnerModule } from "./modules/account-owner/account-owner.module";
+import { CacheModule } from "@nestjs/cache-manager";
+import { ApiKeyService } from "./modules/apikey/apikey.service";
 
 @Module({
   imports: [
@@ -13,6 +15,9 @@ import { AccountOwnerModule } from "./modules/account-owner/account-owner.module
     SettingsModule,
     TransactionModule,
     ApiKeyModule, 
+    CacheModule.register({
+        isGlobal: true
+    }),
     ThrottlerModule.forRoot([
     {
           name: 'short',
@@ -29,7 +34,7 @@ import { AccountOwnerModule } from "./modules/account-owner/account-owner.module
           ttl: 60000,
           limit: 100
         }
-    ]),
+    ])
 ],
 })
 export class AppModule {}

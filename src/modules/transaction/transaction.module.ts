@@ -19,6 +19,7 @@ import { ApiKeyService } from '../apikey/apikey.service';
     ],
   controllers: [TransactionController],
   providers: [
+    ApiKeyService,
     TransactionService,
     TransactionProcessConsumer,
     WalletService,

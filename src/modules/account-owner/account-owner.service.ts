@@ -5,6 +5,7 @@ import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { AuthorizeAccountOwnerDto } from './dto/authorize-account-owner.dto';
 import { JwtService } from '@nestjs/jwt';
+import { AccountOwner } from './entities/account-owner.entity';
 
 @Injectable()
 export class AccountOwnerService {
@@ -41,7 +42,7 @@ export class AccountOwnerService {
       throw new UnauthorizedException();
     }
 
-    const payload = { id: accountOwner.externalId };
+    const payload : AccountOwner = { id: accountOwner.externalId };
     return {
       access_token: await this.jwtService.signAsync(payload),
     };    

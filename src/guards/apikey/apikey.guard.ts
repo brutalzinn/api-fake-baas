@@ -5,19 +5,16 @@ import { ApiKeyService } from 'src/modules/apikey/apikey.service';
 @Injectable()
 export class ApiKeyGuard implements CanActivate {
   constructor(private apikeyService: ApiKeyService) {}
-  canActivate(
+  async canActivate(
     context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  ): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const apiKey = request.headers['api-key']; // give the name you want
     if (!apiKey) {
       throw new UnauthorizedException('API key is missing.');
     }
     const { ip } = request;
-    this.apikeyService.validate(apiKey, ip).catch(()=>{
-      return false
-    })
-
+    await this.apikeyService.validate(apiKey, ip)
     return true;
   }
 }

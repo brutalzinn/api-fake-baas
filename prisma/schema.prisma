@@ -59,7 +59,8 @@ model AccountOwner {
   email      String
   password   String
   settings   Settings[]
-  apikey     ApiKey[]
+  apikeys    ApiKey[]
+  clients    Client[]
 }
 
 model ApiKey {
@@ -78,16 +79,18 @@ model ApiKey {
 }
 
 model Client {
-  id         Int              @id @default(autoincrement())
-  externalId String           @default(uuid())
-  name       String
-  document   String           @unique
-  status     EnumUserStatus   @default(PENDING)
-  createAt   DateTime         @default(now())
-  updateAt   DateTime         @updatedAt
-  address    ClientAddress?
-  wallet     ClientWallet?
-  metadatas  ClientMetadata[]
+  id             Int              @id @default(autoincrement())
+  externalId     String           @default(uuid())
+  idAccountOwner Int?
+  name           String
+  document       String           @unique
+  status         EnumUserStatus   @default(PENDING)
+  createAt       DateTime         @default(now())
+  updateAt       DateTime         @updatedAt
+  address        ClientAddress?
+  wallet         ClientWallet?
+  metadatas      ClientMetadata[]
+  account        AccountOwner?    @relation(fields: [idAccountOwner], references: [id])
 }
 
 model ClientAddress {

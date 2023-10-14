@@ -1,12 +1,12 @@
-import { Inject, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Global, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as moment from 'moment';
 import { CreateApiKey, CreateApiKeyResult } from '../../modules/apikey/entities/create-apikey.entity';
 import { PrismaService } from 'src/database/prisma.service';
 import { ApiKey } from './entities/get-apikey.entity';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CacheApiKey } from './entities/cache-apikey.entity';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 
 @Injectable()
 export class ApiKeyService {

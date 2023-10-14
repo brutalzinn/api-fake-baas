@@ -1,13 +1,13 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards } from '@nestjs/common';
 import { TransactionService } from './transaction.service';
 import { CreateTransactionDto } from './dto/create-transaction.dto';
-import { UpdateTransactionDto } from './dto/update-transaction.dto';
 import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { ApiKeyGuard } from 'src/guards/apikey/apikey.guard';
 import { JwtGuard } from 'src/guards/jwt/jwt.guard';
 
 @Controller('transaction')
 @ApiTags('transactions')
+@UseGuards(JwtGuard, ApiKeyGuard)
 export class TransactionController {
   constructor(private readonly transactionService: TransactionService) {}
 

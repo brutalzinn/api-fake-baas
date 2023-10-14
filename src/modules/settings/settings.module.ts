@@ -7,6 +7,7 @@ import { PrismaService } from 'src/database/prisma.service';
   controllers: [SettingsController],
   providers: [
   SettingsService, 
-  PrismaService]
+  PrismaService
+  ]
 })
 export class SettingsModule {}
