@@ -6,7 +6,6 @@ import { TransactionModule } from "./modules/transaction/transaction.module";
 import { UsersModule } from "./modules/clients/clients.module";
 import { AccountOwnerModule } from "./modules/account-owner/account-owner.module";
 import { CacheModule } from "@nestjs/cache-manager";
-import { ApiKeyService } from "./modules/apikey/apikey.service";
 
 @Module({
   imports: [

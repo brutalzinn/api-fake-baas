@@ -8,6 +8,7 @@ import { ClientsService } from './clients.service';
 import { REQUEST, Reflector } from '@nestjs/core';
 import { User } from 'src/decorators/user.decorator';
 import { AccountOwner } from '../account-owner/entities/account-owner.entity';
+import { CreateUser } from './entities/create-user.entity';
 
 @Controller('clients')
 @ApiTags('clients')
@@ -18,6 +19,8 @@ export class ClientsController {
   @Post()
   @ApiBody({ type: CreateUserDto })
   create(@Body() createUserDto: CreateUserDto, @User() accountOwner : AccountOwner) {
+    let createUser : CreateUser = createUserDto
+    createUser.accountOwnerExternalID = accountOwner.id
     return this.usersService.create(createUserDto);
   }
 

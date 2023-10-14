@@ -9,12 +9,12 @@ import { CacheApiKey } from './entities/cache-apikey.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ListApiKeyDto } from './dto/list-apikey.dto';
 import {v4 as uuidv4} from 'uuid';
+import { BusinessException } from 'src/exceptions/business.exception';
 
-@Injectable()
+@Global()
 export class ApiKeyService {
     private saltOrRounds = 10;
     constructor(private prisma: PrismaService, @Inject(CACHE_MANAGER) private cacheManager: Cache){}
-
 
     async findAll(accountOwnerExternalID: string) : Promise<ListApiKeyDto[]>{
         const apiKeys = await this.prisma.apiKey.findMany({
@@ -41,14 +41,12 @@ export class ApiKeyService {
             }
         })
         if (apiKeyExists){
-            throw new Error("Choose other identifier :)")
+            throw new BusinessException("Choose other identifier :)")
         }
         const randomKey = uuidv4()
         const keyWithPrefix = this.addPrefix(randomKey, createApiKey.identifier)
         const hash = await bcrypt.hash(keyWithPrefix, this.saltOrRounds);
         const currentDate = new Date()
-        const expireAt = moment(currentDate).add(30, 'days').toDate()
-        const lastUsed = currentDate
         await this.prisma.apiKey.create({
           data: {
             key: hash,
@@ -59,8 +57,8 @@ export class ApiKeyService {
                     externalId: createApiKey.accountOwnerExternalID
                 }
             },
-            lastUseAt: lastUsed,
-            expireAt: expireAt
+            lastUseAt: currentDate.toISOString(),
+            expireAt: createApiKey.expireAt
           },
           include: {
             accountOwner: true
@@ -68,7 +66,7 @@ export class ApiKeyService {
         })
         let result : CreateApiKeyResult = {
             originalKey: keyWithPrefix,
-            expireAt: expireAt,
+            expireAt: createApiKey.expireAt,
         }
         return result
     }

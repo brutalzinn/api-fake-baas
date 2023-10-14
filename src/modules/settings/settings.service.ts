@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { EnumSettingsType } from '@prisma/client';
 import { PrismaService } from 'src/database/prisma.service';
-
+import { SettingEnv } from './entities/setting.entity';
 
 @Injectable()
 export class SettingsService {
@@ -17,11 +17,11 @@ export class SettingsService {
     return settings
   }
 
-  async findOneByKeyAndEnv(key: string, system: string) {
+  async findOneKeyByEnviroment(key: string, enviroment: SettingEnv) {
     let settings = this.prisma.settings.findFirst({
       where: {
         key: key,
-        enviroment: system as EnumSettingsType
+        enviroment: enviroment
       }
     })
     return settings

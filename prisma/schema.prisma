@@ -61,6 +61,9 @@ model AccountOwner {
   settings   Settings[]
   apikeys    ApiKey[]
   clients    Client[]
+  createAt       DateTime      @default(now())
+  updateAt       DateTime      @updatedAt
+  lastUseAt      DateTime
 }
 
 model ApiKey {
