@@ -16,9 +16,10 @@ Focused to be used as mockup to frontend applications. Bank as services are big 
 
 - [x] init nestjs PoC to a small baas concept (concept proof)
 - [x] database modeling
-- [x] user creation
+- [x] Account owner
+- [x] Client creation
 - [x] api key/jwt authorize
-- [x] transaction flow
+- [x] transaction between clients
 - [ ] notify system 
 - [ ] custom exception middleware
 - [ ] custom pipes to handle api keys authorization flux.
