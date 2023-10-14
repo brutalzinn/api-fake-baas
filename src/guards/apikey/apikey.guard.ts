@@ -10,6 +10,10 @@ export class ApiKeyGuard implements CanActivate {
   ): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
     const apiKey = request.headers['api-key']; // give the name you want
+    const authorization = request.headers["authorization"]
+    if(authorization){
+      return true
+    }
     if (!apiKey) {
       throw new UnauthorizedException('API key is missing.');
     }

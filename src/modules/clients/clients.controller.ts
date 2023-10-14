@@ -18,7 +18,6 @@ export class ClientsController {
   @Post()
   @ApiBody({ type: CreateUserDto })
   create(@Body() createUserDto: CreateUserDto, @User() accountOwner : AccountOwner) {
-    
     return this.usersService.create(createUserDto);
   }
 

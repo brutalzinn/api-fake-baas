@@ -1,0 +1,246 @@
+{
+	"info": {
+		"_postman_id": "63ccb7cc-37b8-41c1-b9bc-0026c1317575",
+		"name": "api-fake-baas",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14945275",
+		"_collection_link": "https://warped-firefly-411568.postman.co/workspace/testes~8b370ee3-8822-4cda-aae7-85104be1de41/collection/14945275-63ccb7cc-37b8-41c1-b9bc-0026c1317575?action=share&source=collection_link&creator=14945275"
+	},
+	"item": [
+		{
+			"name": "ApiKeys",
+			"item": [
+				{
+					"name": "CreateApiKey",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "api-key",
+								"value": "string_2v77hcwg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identifier\": \"other_identifier\",\n  \"description\": \"string\",\n  \"name\": \"string\",\n  \"expireAt\": \"2023-10-14T16:15:36.162Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3005/apikey",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"apikey"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GetApiKey",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{token}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "api-key",
+								"value": "string_2v77hcwg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"identifier\": \"string\",\n  \"description\": \"string\",\n  \"name\": \"string\",\n  \"expireAt\": \"2023-10-14T16:15:36.162Z\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3005/apikey",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"apikey"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "AccountOwner",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "api-key",
+								"value": "string_2v77hcwg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"string\",\n  \"password\": \"string\",\n  \"name\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3005/account-owner/register",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"account-owner",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Authorize",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"let responseData=pm.response.json();",
+									"pm.environment.set(\"token\", responseData[\"access_token\"])"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "api-key",
+								"value": "string_2v77hcwg",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"string\",\n  \"password\": \"string\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3005/account-owner/authorize",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"account-owner",
+								"authorize"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Clients",
+			"item": [
+				{
+					"name": "CreateClient",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjcxMWFlYzNkLWEzYjQtNDBjNC05MDI0LTIwMWZmY2I0ZTE2ZSIsImlhdCI6MTY5NzI5OTkzNiwiZXhwIjoxNjk3MzAwNDM2fQ.r0QMvnPoMEB_Ma3AK3F5soIi9onZ_fPdimS0jGNvVNQ",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "api-key",
+								"value": "string_2v77hcwg",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"document\": \"string\",\n  \"name\": \"string\",\n  \"address\": {\n    \"street\": \"string\",\n    \"city\": \"string\",\n    \"postalCode\": \"string\",\n    \"country\": \"string\",\n    \"state\": \"string\",\n    \"stateCode\": \"string\"\n  },\n  \"contact\": {\n    \"email\": \"string\",\n    \"phoneNumber\": \"string\"\n  }\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:3005/apikey",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "3005",
+							"path": [
+								"apikey"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

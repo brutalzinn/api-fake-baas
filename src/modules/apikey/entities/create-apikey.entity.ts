@@ -3,6 +3,7 @@ export class CreateApiKey {
     description: string
     name: string
     expireAt: Date
+    accountOwnerExternalID?: string
 }
 
 export class CreateApiKeyResult{

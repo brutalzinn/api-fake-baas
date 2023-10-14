@@ -3,18 +3,38 @@ import * as bcrypt from 'bcrypt';
 import * as moment from 'moment';
 import { CreateApiKey, CreateApiKeyResult } from '../../modules/apikey/entities/create-apikey.entity';
 import { PrismaService } from 'src/database/prisma.service';
-import { ApiKey } from './entities/get-apikey.entity';
+import { ApiKey } from './entities/apikey.entity';
 import { Cache } from 'cache-manager';
 import { CacheApiKey } from './entities/cache-apikey.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import { ListApiKeyDto } from './dto/list-apikey.dto';
+import {v4 as uuidv4} from 'uuid';
 
 @Injectable()
 export class ApiKeyService {
     private saltOrRounds = 10;
     constructor(private prisma: PrismaService, @Inject(CACHE_MANAGER) private cacheManager: Cache){}
 
-    async create(createApiKey : CreateApiKey) : Promise<CreateApiKeyResult>{
-        
+
+    async findAll(accountOwnerExternalID: string) : Promise<ListApiKeyDto[]>{
+        const apiKeys = await this.prisma.apiKey.findMany({
+            where: {
+                accountOwner: {
+                    externalId: accountOwnerExternalID
+                }
+            }
+        })
+
+        let result = apiKeys.map((item)=> new ListApiKeyDto({
+            identifier: item.identifier,
+            expireAt: item.expireAt,
+            description: item.description,
+            lastUsed: item.lastUseAt
+        }))
+
+        return result
+    }
+    async create(createApiKey : CreateApiKey) : Promise<CreateApiKeyResult>{ 
         const apiKeyExists = await this.prisma.apiKey.findFirst({
             where: {
                 identifier: createApiKey.identifier
@@ -23,7 +43,7 @@ export class ApiKeyService {
         if (apiKeyExists){
             throw new Error("Choose other identifier :)")
         }
-        const randomKey =  Math.random().toString(36).slice(-8);
+        const randomKey = uuidv4()
         const keyWithPrefix = this.addPrefix(randomKey, createApiKey.identifier)
         const hash = await bcrypt.hash(keyWithPrefix, this.saltOrRounds);
         const currentDate = new Date()
@@ -34,8 +54,16 @@ export class ApiKeyService {
             key: hash,
             description: createApiKey.description,
             identifier: createApiKey.identifier,
+            accountOwner : {
+                connect: {
+                    externalId: createApiKey.accountOwnerExternalID
+                }
+            },
             lastUseAt: lastUsed,
             expireAt: expireAt
+          },
+          include: {
+            accountOwner: true
           }
         })
         let result : CreateApiKeyResult = {
@@ -61,10 +89,17 @@ export class ApiKeyService {
                 keyHash : keyHash,
                 key: originalKey
             }
-            await this.cacheManager.set(origin, newKeyCache , 15000)
+            await this.cacheManager.set(origin, newKeyCache , 30000)
+            await this.prisma.apiKey.updateMany({
+                where: {
+                    identifier: key.identifier
+                },
+                data :{
+                    lastUseAt: new Date()
+                }
+            })
         }
         const isMatch = await bcrypt.compare(originalKey, keyHash);
-        
         if(!isMatch){
             await this.cacheManager.del(origin)
             throw new UnauthorizedException();

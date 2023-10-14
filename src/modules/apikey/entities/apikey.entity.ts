@@ -1,4 +1,4 @@
-export class ApiKey{
+export class ApiKey {
     key: string 
     identifier: string
 }
