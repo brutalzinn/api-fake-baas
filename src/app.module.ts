@@ -6,6 +6,7 @@ import { TransactionModule } from "./modules/transaction/transaction.module";
 import { UsersModule } from "./modules/clients/clients.module";
 import { AccountOwnerModule } from "./modules/account-owner/account-owner.module";
 import { CacheModule } from "@nestjs/cache-manager";
+import { ClientWalletHistoryModule } from './modules/client-wallet-history/client-wallet-history.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { CacheModule } from "@nestjs/cache-manager";
     CacheModule.register({
         isGlobal: true
     }),
+    /// limit requests
     ThrottlerModule.forRoot([
     {
           name: 'short',
@@ -33,7 +35,8 @@ import { CacheModule } from "@nestjs/cache-manager";
           ttl: 60000,
           limit: 100
         }
-    ])
+    ]),
+    ClientWalletHistoryModule,
 ],
 })
 export class AppModule {}

@@ -5,10 +5,9 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { ApiKeyGuard } from 'src/guards/apikey/apikey.guard';
 import { JwtGuard } from 'src/guards/jwt/jwt.guard';
 import { ClientsService } from './clients.service';
-import { REQUEST, Reflector } from '@nestjs/core';
-import { User } from 'src/decorators/user.decorator';
+import { CurrentUser } from 'src/decorators/user.decorator';
 import { AccountOwner } from '../account-owner/entities/account-owner.entity';
-import { CreateUser } from './entities/create-user.entity';
+import { CreateClientEntity } from './entities/create-client.entity';
 
 @Controller('clients')
 @ApiTags('clients')
@@ -18,10 +17,15 @@ export class ClientsController {
 
   @Post()
   @ApiBody({ type: CreateUserDto })
-  create(@Body() createUserDto: CreateUserDto, @User() accountOwner : AccountOwner) {
-    let createUser : CreateUser = createUserDto
+  create(@Body() createUserDto: CreateUserDto, @CurrentUser() accountOwner : AccountOwner) {
+    /// a dumb way to do a new DTO? ITS HUMAN READABLE? i dont like this kind approach.
+    /// but the service needs only accept entitities. No more random objects.
+    let createUser : CreateClientEntity = {
+      ...createUserDto,
+      accountOwnerExternalID: accountOwner.id
+    }
     createUser.accountOwnerExternalID = accountOwner.id
-    return this.usersService.create(createUserDto);
+    return this.usersService.create(createUser);
   }
 
   @Get(':id')

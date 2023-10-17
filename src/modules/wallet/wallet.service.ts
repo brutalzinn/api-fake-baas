@@ -77,7 +77,7 @@ export class WalletService {
     const originBeforeValue = originBalance + createWalletHistory.value
     const originWalletHistory = this.prisma.clientWalletHistory.create({
       data:{
-        userWallet: {
+        clientWallet: {
           connect:walletsResult[0]
         },
         direction: 'OUT',
@@ -90,7 +90,7 @@ export class WalletService {
     const targetBeforeValue = targetBalance - createWalletHistory.value
     const targetWalletHistory = this.prisma.clientWalletHistory.create({
       data:{
-        userWallet: {
+        clientWallet: {
           connect:walletsResult[1]
         },
         direction: 'IN',

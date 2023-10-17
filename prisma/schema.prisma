@@ -61,9 +61,9 @@ model AccountOwner {
   settings   Settings[]
   apikeys    ApiKey[]
   clients    Client[]
-  createAt       DateTime      @default(now())
-  updateAt       DateTime      @updatedAt
-  lastUseAt      DateTime
+  createAt   DateTime   @default(now())
+  updateAt   DateTime   @updatedAt
+  lastUseAt  DateTime
 }
 
 model ApiKey {
@@ -144,7 +144,7 @@ model ClientWalletHistory {
   value          Decimal
   createAt       DateTime             @default(now())
   updateAt       DateTime             @updatedAt
-  userWallet     ClientWallet         @relation(fields: [idClientWallet], references: [id])
+  clientWallet   ClientWallet         @relation(fields: [idClientWallet], references: [id])
 }
 
 model Transactions {
