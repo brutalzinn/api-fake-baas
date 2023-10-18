@@ -5,8 +5,8 @@ import { ApiKeyService } from './apikey.service';
 import { ApiTags } from '@nestjs/swagger';
 import { JwtGuard } from 'src/guards/jwt/jwt.guard';
 import { AccountOwner } from '../account-owner/entities/account-owner.entity';
-import { CreateApiKey } from './entities/create-apikey.entity';
 import { CurrentUser } from 'src/decorators/current.user';
+import { ApiKeyEntity } from './entities/apikey.entity';
 
 @Controller('apikey')
 @ApiTags('apikey')
@@ -16,7 +16,7 @@ export class ApikeyController {
 
   @Post()
   async create(@Body() createApikeyDto: CreateApikeyDto, @CurrentUser() accountOwner : AccountOwner) {
-    let createApiKey : CreateApiKey = createApikeyDto
+    let createApiKey : ApiKeyEntity = createApikeyDto
     createApiKey.accountOwnerExternalID = accountOwner.id
     return await this.apikeyService.create(createApiKey);
   }

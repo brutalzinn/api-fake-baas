@@ -9,7 +9,7 @@ export class ApiKeyGuard implements CanActivate {
     context: ExecutionContext,
   ): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const apiKey = request.headers['api-key']; // give the name you want
+    const apiKey = this.extractApiKeyFromHeader(request)
     const authorization = request.headers["authorization"]
     if(authorization){
       return true
@@ -18,7 +18,15 @@ export class ApiKeyGuard implements CanActivate {
       throw new UnauthorizedException('API key is missing.');
     }
     const { ip } = request;
-    await this.apikeyService.validate(apiKey, ip)
+    let apiKeyAuthorized = await this.apikeyService.validateAndGetKey(apiKey, ip)
+  
+  //  request['user'] = payload;
+
     return true;
+  }
+
+  private extractApiKeyFromHeader(request: Request): string | undefined {
+    const apiKey = request.headers['api-key'];
+    return apiKey
   }
 }

@@ -11,3 +11,8 @@ export class CreateApikeyDto {
     @IsDateString()
     expireAt: string
 }
+
+export class CreateApiKeyDtoResult{
+    originalKey: string
+    expireAt: string
+}

@@ -29,12 +29,17 @@ export class ClientsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
+  findOne(@Param('id') id: string, @CurrentUser() accountOwner : AccountOwner) {
     return this.usersService.findOneByExternalId(id);
   }
 
+  @Get('')
+  findAll(@CurrentUser() accountOwner : AccountOwner) {
+    return this.usersService.findAll(accountOwner.id);
+  }
+
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  update(@Param('id') id: string,@CurrentUser() accountOwner : AccountOwner, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(id, updateUserDto);
   }
 }

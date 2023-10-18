@@ -1,15 +1,16 @@
 import { Global, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
 import * as moment from 'moment';
-import { CreateApiKey, CreateApiKeyResult } from '../../modules/apikey/entities/create-apikey.entity';
 import { PrismaService } from 'src/database/prisma.service';
-import { ApiKey } from './entities/apikey.entity';
 import { Cache } from 'cache-manager';
 import { CacheApiKey } from './entities/cache-apikey.entity';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { ListApiKeyDto } from './dto/list-apikey.dto';
 import {v4 as uuidv4} from 'uuid';
 import { BusinessException } from 'src/exceptions/business.exception';
+import { CreateApiKeyDtoResult, CreateApikeyDto } from './dto/create-apikey.dto';
+import { ApiKey } from '@prisma/client';
+import { ApiKeyEntity } from './entities/apikey.entity';
 
 @Global()
 export class ApiKeyService {
@@ -34,44 +35,44 @@ export class ApiKeyService {
 
         return result
     }
-    async create(createApiKey : CreateApiKey) : Promise<CreateApiKeyResult>{ 
+    async create(apiKey : ApiKeyEntity) : Promise<CreateApiKeyDtoResult>{ 
         const apiKeyExists = await this.prisma.apiKey.findFirst({
             where: {
-                identifier: createApiKey.identifier
+                identifier: apiKey.identifier
             }
         })
         if (apiKeyExists){
             throw new BusinessException("Choose other identifier :)")
         }
         const randomKey = uuidv4()
-        const keyWithPrefix = this.addPrefix(randomKey, createApiKey.identifier)
+        const keyWithPrefix = this.addPrefix(randomKey, apiKey.identifier)
         const hash = await bcrypt.hash(keyWithPrefix, this.saltOrRounds);
         const currentDate = new Date()
         await this.prisma.apiKey.create({
           data: {
             key: hash,
-            description: createApiKey.description,
-            identifier: createApiKey.identifier,
+            description: apiKey.description,
+            identifier: apiKey.identifier,
             accountOwner : {
                 connect: {
-                    externalId: createApiKey.accountOwnerExternalID
+                    externalId: apiKey.accountOwnerExternalID
                 }
             },
             lastUseAt: currentDate.toISOString(),
-            expireAt: createApiKey.expireAt
+            expireAt: apiKey.expireAt
           },
           include: {
             accountOwner: true
           }
         })
-        let result : CreateApiKeyResult = {
+        let result : CreateApiKeyDtoResult = {
             originalKey: keyWithPrefix,
-            expireAt: createApiKey.expireAt,
+            expireAt: apiKey.expireAt,
         }
         return result
     }
 
-    async validate(originalKey : string, origin: string){
+    async validateAndGetKey(originalKey : string, origin: string) : Promise<ApiKeyEntity>{
         const key = this.getApiKey(originalKey)
         const cacheApiKey = await this.cacheManager.get<CacheApiKey>(origin)
         let keyHash = cacheApiKey?.keyHash || ""
@@ -79,13 +80,17 @@ export class ApiKeyService {
             let apiKey = await this.prisma.apiKey.findFirst({
                 where: {
                     identifier: key.identifier
+                },
+                include:{
+                    accountOwner: true
                 }
             })
             keyHash = apiKey.key
             let newKeyCache : CacheApiKey ={
                 identifier: key.identifier,
                 keyHash : keyHash,
-                key: originalKey
+                key: originalKey,
+                accountOwnerExternalID: apiKey.accountOwner.externalId
             }
             await this.cacheManager.set(origin, newKeyCache , 30000)
             await this.prisma.apiKey.updateMany({
@@ -102,20 +107,28 @@ export class ApiKeyService {
             await this.cacheManager.del(origin)
             throw new UnauthorizedException();
         }
+
+        let result : ApiKeyEntity = {
+            key: key.key,
+            identifier: key.identifier,
+            accountOwnerExternalID: key.accountOwnerExternalID
+        }
+
+        return result
     }
 
     addPrefix(key: string, indentifier: string): string{
         const newKey = indentifier + "_" + key
         return newKey
     }
-    getApiKey(originalKey: string) : ApiKey{
+    getApiKey(originalKey: string) : ApiKeyEntity {
         const keySplit = originalKey.split("_")
         if(keySplit.length != 2 ){
             throw new UnauthorizedException();
         }
         const key = keySplit[1]
         const identifier = keySplit[0]
-        const result : ApiKey = {
+        const result : ApiKeyEntity = {
             key: key,
             identifier : identifier
         }

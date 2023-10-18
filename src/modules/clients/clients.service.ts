@@ -5,7 +5,7 @@ import { BusinessException } from 'src/exceptions/business.exception';
 import { CreateClientEntity } from './entities/create-client.entity';
 import { Client, ClientAddress, ClientMetadata, Prisma } from '@prisma/client';
 import { ClientEntity } from './entities/client.etity';
-import {chain} from 'lodash';
+import { transformDataToMetadata } from 'src/common/metadata.common';
 
 @Injectable()
 export class ClientsService {
@@ -97,23 +97,8 @@ export class ClientsService {
     /// you shoulnd use lodash to do at this time.. its overenginer.. 
     /// but when we need to get the metadata fields.. this will change everything.
     
-    let clientEntity : ClientEntity = {
-      externalId: client.externalId,
-      document: client.document,
-      name: client.name,
-      address: {
-        city: client.address.city,
-        country: client.address.country,
-        state: client.address.state,
-        stateCode: client.address.stateCode,
-        street: client.address.street,
-        postalCode: client.address.postalCode
-      },
-      contact: {
-        phoneNumber: "",
-        email: ""
-      }
-    }
+    let clientEntity = this.toClient(client, client.address, client.metadatas)
+
 
     return clientEntity
   }
@@ -136,14 +121,44 @@ export class ClientsService {
     if(!client){
        throw new BusinessException("You cant get a user that doesnt exist.")
     }
-    let clientEntity = toClient(client, client.address, client.metadatas)
+    let clientEntity = this.toClient(client, client.address, client.metadatas)
     return clientEntity
-    /// but you are asking why we are creating many DTOS here.
+  }
+
+    async findAll(accountOwnerID: string): Promise<ClientEntity[]>{
+    /// i think you are asking at this moment why you should use many dtos for this examples.
+    /// but the DTO is used to remove the dependencies of object from prisma to us project.
+    /// at this time we are using prisma. but after some years.. i dont know if prisma is still alive and maintable.
+    /// 
+    let clients = await this.prisma.client.findMany({
+      where: {
+        account: {
+          externalId: accountOwnerID
+        }
+        },
+        include: {
+        wallet: true,
+        address: true,
+        metadatas: true
+      }
+    })
+    if(!clients){
+       throw new BusinessException("You cant get a user that doesnt exist.")
+    }
+    let clientsEntity = clients.map(client => this.toClient(client, client.address, client.metadatas))
+    return clientsEntity
+  }
+
+  update(document: string, updateUserDto: UpdateUserDto) {
+    return `This action updates a #${document} user`;
+  }
+
+   /// but you are asking why we are creating many DTOS here.
     /// you can do this with many ways. take a look at this example:
-    function toClient(entity: Client, address: ClientAddress, clientMetadata: Array<ClientMetadata>) : ClientEntity {
+  private toClient(entity: Client, address: ClientAddress, clientMetadata: Array<ClientMetadata>) : ClientEntity {
       /// use lodash module to facilities us dto.
       ///this case we are using chain to create a copy of the object. after that we create a "keyBy" that mapp the object to a key map value and after that we get by the value of key object. Its more readable.
-      let metadata = chain(clientMetadata).keyBy("key").mapValues("value").value()
+      let metadata = transformDataToMetadata(clientMetadata)
       let clientEntity : ClientEntity = {
           externalId: entity.externalId,
           document: entity.document,
@@ -157,15 +172,10 @@ export class ClientsService {
             postalCode: address.postalCode
           },
           contact: {
-            phoneNumber: metadata.phoneNumber,
-            email: metadata.email
+            phoneNumber: metadata.contact["phone_number"],
+            email: metadata.contact["email"]
           }
       }
         return clientEntity
     }
-  }
-
-  update(document: string, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${document} user`;
-  }
 }
