@@ -63,7 +63,7 @@ model AccountOwner {
   clients    Client[]
   createAt   DateTime   @default(now())
   updateAt   DateTime   @updatedAt
-  lastUseAt  DateTime
+  lastUseAt  DateTime   @default(now())
 }
 
 model ApiKey {

@@ -16,9 +16,6 @@ export class ClientsService {
 
     const userExists = await this.prisma.client.findFirst({
       where: {
-        account: {
-          externalId: createUserDto.accountOwnerExternalID
-        },
           document: createUserDto.document
         },
         include:{

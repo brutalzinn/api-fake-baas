@@ -1,6 +1,5 @@
-import { HttpException, HttpStatus, Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { CreateAccountOwnerDto } from './dto/create-account-owner.dto';
-import { UpdateAccountOwnerDto } from './dto/update-account-owner.dto';
 import { PrismaService } from 'src/database/prisma.service';
 import * as bcrypt from 'bcrypt';
 import { AuthorizeAccountOwnerDto } from './dto/authorize-account-owner.dto';
@@ -22,7 +21,6 @@ export class AccountOwnerService {
         password: password
       }
     })
-    return
   }
   
   async authorize(authorizeAccountOwner: AuthorizeAccountOwnerDto) {

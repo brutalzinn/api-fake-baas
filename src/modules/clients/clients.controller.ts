@@ -5,7 +5,7 @@ import { ApiBody, ApiTags } from '@nestjs/swagger';
 import { ApiKeyGuard } from 'src/guards/apikey/apikey.guard';
 import { JwtGuard } from 'src/guards/jwt/jwt.guard';
 import { ClientsService } from './clients.service';
-import { CurrentUser } from 'src/decorators/user.decorator';
+import { CurrentUser } from 'src/decorators/current.user';
 import { AccountOwner } from '../account-owner/entities/account-owner.entity';
 import { CreateClientEntity } from './entities/create-client.entity';
 

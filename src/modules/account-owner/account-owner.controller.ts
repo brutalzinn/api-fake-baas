@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body} from '@nestjs/common';
 import { AccountOwnerService } from './account-owner.service';
 import { CreateAccountOwnerDto } from './dto/create-account-owner.dto';
 import { ApiTags } from '@nestjs/swagger';
@@ -10,13 +10,13 @@ export class AccountOwnerController {
   constructor(private readonly accountOwnerService: AccountOwnerService) {}
 
   @Post("/register")
-  register(@Body() createAccountOwnerDto: CreateAccountOwnerDto) {
-    return this.accountOwnerService.create(createAccountOwnerDto);
+  async register(@Body() createAccountOwnerDto: CreateAccountOwnerDto) {
+    return await this.accountOwnerService.create(createAccountOwnerDto);
   }
 
   @Post("/authorize")
-  auth(@Body() auhtorizeAccountOwner: AuthorizeAccountOwnerDto) {
-    return this.accountOwnerService.authorize(auhtorizeAccountOwner);
+  async auth(@Body() auhtorizeAccountOwner: AuthorizeAccountOwnerDto) {
+    return await this.accountOwnerService.authorize(auhtorizeAccountOwner);
   }
 
 }
