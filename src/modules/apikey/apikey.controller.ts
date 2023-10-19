@@ -26,4 +26,10 @@ export class ApikeyController {
     const accountOwnerExternalID = accountOwner.id
     return await this.apikeyService.findAll(accountOwnerExternalID);
   }
+
+  @Delete()
+  async delete(@CurrentUser() accountOwner : AccountOwner) {
+    const accountOwnerExternalID = accountOwner.id
+    return await this.apikeyService.de(accountOwnerExternalID);
+  }
 }

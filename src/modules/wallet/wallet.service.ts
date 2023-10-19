@@ -1,7 +1,8 @@
-import {  HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma.service';
 import { MoveMoneyToTarget } from '../../modules/wallet/entities/move.money.to.target';
 import { CreateWalletHistory } from '../../modules/wallet/entities/create.wallet.history';
+import { BusinessException } from 'src/exceptions/business.exception';
 
 @Injectable()
 export class WalletService {
@@ -14,7 +15,7 @@ export class WalletService {
         }
     })
     if (!originAccount){
-        throw new HttpException('Account not found', HttpStatus.FORBIDDEN)
+        throw new BusinessException('Account not found')
     }
   }
 
@@ -27,7 +28,7 @@ export class WalletService {
     const balance = originWallet.balance.toNumber()
     if(balance < moveMoneyToTarget.value)
     {
-        throw Error("Account found is insufficient.")
+      throw new BusinessException("Account found is insufficient.")
     }
     let originWalletDrawBalance = this.prisma.clientWallet.update({
       where:{

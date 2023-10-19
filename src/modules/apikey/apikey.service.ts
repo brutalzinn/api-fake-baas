@@ -117,11 +117,20 @@ export class ApiKeyService {
         return result
     }
 
-    addPrefix(key: string, indentifier: string): string{
+    async delete (externalID : string) {
+        await this.prisma.apiKey.delete({
+            where: {
+                externalId: externalID
+            }
+        })
+    }
+    
+    private addPrefix(key: string, indentifier: string): string{
         const newKey = indentifier + "_" + key
         return newKey
     }
-    getApiKey(originalKey: string) : ApiKeyEntity {
+
+    private getApiKey(originalKey: string) : ApiKeyEntity {
         const keySplit = originalKey.split("_")
         if(keySplit.length != 2 ){
             throw new UnauthorizedException();

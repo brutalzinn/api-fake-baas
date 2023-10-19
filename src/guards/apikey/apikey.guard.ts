@@ -1,5 +1,6 @@
 import { CanActivate, ExecutionContext, Inject, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { AccountOwner } from 'src/modules/account-owner/entities/account-owner.entity';
 import { ApiKeyService } from 'src/modules/apikey/apikey.service';
 
 @Injectable()
@@ -19,9 +20,10 @@ export class ApiKeyGuard implements CanActivate {
     }
     const { ip } = request;
     let apiKeyAuthorized = await this.apikeyService.validateAndGetKey(apiKey, ip)
-  
-  //  request['user'] = payload;
-
+    const payload : AccountOwner = {
+      id : apiKeyAuthorized.accountOwnerExternalID
+    }
+    request['user'] = payload
     return true;
   }
 

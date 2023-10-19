@@ -68,6 +68,7 @@ model AccountOwner {
 
 model ApiKey {
   id             Int           @id @default(autoincrement())
+  externalId     String        @unique @default(uuid())
   identifier     String
   idAccountOwner Int?
   key            String
